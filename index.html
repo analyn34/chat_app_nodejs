@@ -6,7 +6,7 @@
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
-
+  <script src="./js/socket.io.js"></script>
   <meta charset="UTF-8">
   <title>Chat App</title>
 </head>
@@ -26,7 +26,33 @@
   </div>
 
   <script>
+    var socket = io();
 
+    $(() => {
+      $("#send").click(() => {
+        sendMessage({
+          name: $("#name").val(),
+          message: $("#message").val()
+        });
+      });
+      getMessages();
+    })
+
+    socket.on('message', addMessages);
+
+    function addMessages(message) {
+      $("#messages").append('<h4> $ {message.name} </h4> <p> ${message.message} </p>')
+    }
+
+    function getMessages(){
+      $.get('http://localhost:3000/messages', (data) => {
+        data.forEach(addMessages);
+      });
+    }
+
+    function sendMessage(message) {
+      $.post('http://localhost:3000/messages', message);
+    }
   </script>
   
 </body>
